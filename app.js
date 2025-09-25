@@ -112,25 +112,64 @@
 // })
 
 import express from "express"
+import dotenv from "dotenv"
+import { connectToDB } from "./utils/db.js"
+import userModel from "./models/user.model.js"
+
+
 
 // initialize express
 
 const app = express()
+dotenv.config({ quiet: true })
+app.use(express.json())
 
 app.get("/", (req, res)=>{
-  res.send("Home Page")
+  res.status(201).send("Samuel the world best")
 })
 
-app.get("/about", (req, res)=>{
-  res.send("About Page")
+// app.get("/about", (req, res)=>{
+//   res.send("About Page")
+// })
+
+// app.get("/contact", (req, res)=>{
+//   res.send("Contact Page")
+// })
+
+
+// CRUD OPERATION
+
+// CREATE OPERATION
+app.post("/user", async (req, res)=>{
+  try {
+    const { body } = req
+    // const body = req.body
+    const user = new userModel(body)
+    await user.save()
+    return res.status(200).json({
+          message: "Successfully created user",
+          data: user
+    })
+  } catch (error) {
+      return res.status(500).json({
+        message: error.message
+      })
+  }
 })
 
-app.get("/contact", (req, res)=>{
-  res.send("Contact Page")
+
+
+const PORT = process.env.PORT || 4000
+
+app.listen(PORT, async()=>{
+  try {
+    await connectToDB()
+    console.log(`server listening on port ${PORT}`)
+  } catch (error) {
+    console.log("server couldn't start")
+  }
 })
 
-const PORT = 4000
 
-app.listen(PORT,()=>{
-  console.log(`server listening on port ${PORT}`)
-})
+
+
