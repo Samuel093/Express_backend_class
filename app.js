@@ -115,6 +115,7 @@ import express from "express"
 import dotenv from "dotenv"
 import { connectToDB } from "./utils/db.js"
 import userModel from "./models/user.model.js"
+import { useReducer } from "react"
 
 
 
@@ -157,7 +158,86 @@ app.post("/user", async (req, res)=>{
   }
 })
 
+// READ OPERATION
+app.get('/users', async (req, res)=>{
+  try {
+    const user = await userModel.find()
+    if (user.length === 0){
+      return res.status(400).json({
+        message: "No user found in database"
+      })
+    }
+    return res.status(200).json({
+      message: "All users fetched successfully"
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    })
+    
+  }
+})
 
+
+// READ INDIVIDUAL OPERATION
+app.get('/users/id', async (req, res)=>{
+  try {
+    const { id } = req.params
+    const user = await userModel.findById(id)
+    if(!user){
+      return res.status(404).json({
+        message: "No user matched"
+      })
+    }
+    return res.status(200).json({
+      message: "User fetched successfully",
+      data: user
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    })
+  }
+})
+
+// DELETE INDIVIDUAL OPERATION
+app.delete('/users/:id', async (req, res)=>{
+  try {
+    const { id } = req.params
+    const user = await userModel.findByIdAndDelete(id)
+    if(!user){
+      return res.status(400).json({
+        message: "Cannot delete non existent user"
+      })
+    }
+    return res.status(200).json({
+      message: "User deleted successufully"
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    })
+  }
+})
+
+// DELETE MANY OPERATION
+app.delete('/users', async (req, res)=>{
+  try {
+    const user = await userModel.deleteMany()
+    if(user.deletedCount === 0){
+      return res.status(400).json({
+        message: "No users to delete"
+      })
+    }
+    return res.status(200).json({
+      message: "Users deleted successufully"
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    })
+  }
+})
 
 const PORT = process.env.PORT || 4000
 
