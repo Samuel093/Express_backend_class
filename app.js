@@ -239,6 +239,30 @@ app.delete('/users', async (req, res)=>{
   }
 })
 
+
+// UPDATE WITH PUT OPERATION
+app.put('/users:id', async (req, res)=>{
+  try {
+    const { id } = req.params
+    const { body } = req
+    const user = await userModel.findByIdAndUpdate(id, body, { new: true})
+    if(!user){
+      return res.status(400).json({
+        message: "Cannot update non existent user"
+      })
+    }
+    return res.status(200).json({
+      message: "User updated successfully",
+      data: user
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    })
+  }
+})
+
+
 const PORT = process.env.PORT || 4000
 
 app.listen(PORT, async()=>{
