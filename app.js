@@ -115,7 +115,10 @@ import express from "express"
 import dotenv from "dotenv"
 import { connectToDB } from "./utils/db.js"
 import userModel from "./models/user.model.js"
-import { useReducer } from "react"
+import adminModel from "./models/admin.model.js"
+import router from "./routers/index.js"
+
+// import router from "./routers/user.router.js"
 
 
 
@@ -124,6 +127,8 @@ import { useReducer } from "react"
 const app = express()
 dotenv.config({ quiet: true })
 app.use(express.json())
+
+app.use('/api/v1', router)
 
 app.get("/", (req, res)=>{
   res.status(201).send("Samuel the world best")
@@ -141,126 +146,146 @@ app.get("/", (req, res)=>{
 // CRUD OPERATION
 
 // CREATE OPERATION
-app.post("/user", async (req, res)=>{
-  try {
-    const { body } = req
-    // const body = req.body
-    const user = new userModel(body)
-    await user.save()
-    return res.status(200).json({
-          message: "Successfully created user",
-          data: user
-    })
-  } catch (error) {
-      return res.status(500).json({
-        message: error.message
-      })
-  }
-})
+// app.post("/admin", async (req, res)=>{
+//   try {
+//     const { body } = req
+//     // const body = req.body
+//     const admin = new adminModel(body)
+//     await admin.save()
+//     return res.status(200).json({
+//           message: "Successfully created Admin",
+//           data: admin
+//     })
+//   } catch (error) {
+//       return res.status(500).json({
+//         message: error.message
+//       })
+//   }
+// })
+
+
+// app.post("/user", async (req, res)=>{
+//   try {
+//     const { body } = req
+//     // const body = req.body
+//     const user = new userModel(body)
+//     await user.save()
+//     return res.status(200).json({
+//           message: "Successfully created user",
+//           data: user
+//     })
+//   } catch (error) {
+//       return res.status(500).json({
+//         message: error.message
+//       })
+//   }
+// })
 
 // READ OPERATION
-app.get('/users', async (req, res)=>{
-  try {
-    const user = await userModel.find()
-    if (user.length === 0){
-      return res.status(400).json({
-        message: "No user found in database"
-      })
-    }
-    return res.status(200).json({
-      message: "All users fetched successfully"
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    })
+// app.get('/users', async (req, res)=>{
+//   try {
+//     // const user = await userModel.find().populate('admin', '-_id -__v -createdAt -updatedAt')
+//     const user = await userModel.find()
+//     if (user.length === 0){
+//       return res.status(400).json({
+//         message: "No user found in database"
+//       })
+//     }
+//     return res.status(200).json({
+//       message: "All users fetched successfully",
+//       data: user
+//     })
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message
+//     })
     
-  }
-})
+//   }
+// })
 
 
 // READ INDIVIDUAL OPERATION
-app.get('/users/id', async (req, res)=>{
-  try {
-    const { id } = req.params
-    const user = await userModel.findById(id)
-    if(!user){
-      return res.status(404).json({
-        message: "No user matched"
-      })
-    }
-    return res.status(200).json({
-      message: "User fetched successfully",
-      data: user
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    })
-  }
-})
+// app.get('/users/id', async (req, res)=>{
+//   try {
+//     const { id } = req.params
+//     const user = await userModel.findById(id)
+//     if(!user){
+//       return res.status(404).json({
+//         message: "No user matched"
+//       })
+//     }
+//     return res.status(200).json({
+//       message: "User fetched successfully",
+//       data: user
+//     })
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message
+//     })
+//   }
+// })
 
 // DELETE INDIVIDUAL OPERATION
-app.delete('/users/:id', async (req, res)=>{
-  try {
-    const { id } = req.params
-    const user = await userModel.findByIdAndDelete(id)
-    if(!user){
-      return res.status(400).json({
-        message: "Cannot delete non existent user"
-      })
-    }
-    return res.status(200).json({
-      message: "User deleted successufully"
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    })
-  }
-})
+// app.delete('/users/:id', async (req, res)=>{
+//   try {
+//     const { id } = req.params
+//     const user = await userModel.findByIdAndDelete(id)
+//     if(!user){
+//       return res.status(400).json({
+//         message: "Cannot delete non existent user"
+//       })
+//     }
+//     return res.status(200).json({
+//       message: "User deleted successufully"
+//     })
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message
+//     })
+//   }
+// })
 
 // DELETE MANY OPERATION
-app.delete('/users', async (req, res)=>{
-  try {
-    const user = await userModel.deleteMany()
-    if(user.deletedCount === 0){
-      return res.status(400).json({
-        message: "No users to delete"
-      })
-    }
-    return res.status(200).json({
-      message: "Users deleted successufully"
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    })
-  }
-})
+// app.delete('/users', async (req, res)=>{
+//   try {
+//     const user = await userModel.deleteMany()
+//     if(user.deletedCount === 0){
+//       return res.status(400).json({
+//         message: "No users to delete"
+//       })
+//     }
+//     return res.status(200).json({
+//       message: "Users deleted successufully"
+//     })
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message
+//     })
+//   }
+// })
 
 
 // UPDATE WITH PUT OPERATION
-app.put('/users:id', async (req, res)=>{
-  try {
-    const { id } = req.params
-    const { body } = req
-    const user = await userModel.findByIdAndUpdate(id, body, { new: true})
-    if(!user){
-      return res.status(400).json({
-        message: "Cannot update non existent user"
-      })
-    }
-    return res.status(200).json({
-      message: "User updated successfully",
-      data: user
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    })
-  }
-})
+// app.put('/users:id', async (req, res)=>{
+//   try {
+//     const { id } = req.params
+//     const { body } = req
+//     const user = await userModel.findByIdAndUpdate(id, body, { new: true})
+//     if(!user){
+//       return res.status(400).json({
+//         message: "Cannot update non existent user"
+//       })
+//     }
+//     return res.status(200).json({
+//       message: "User updated successfully",
+//       data: user
+//     })
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message
+//     })
+//   }
+// })
 
 
 const PORT = process.env.PORT || 4000
@@ -273,7 +298,5 @@ app.listen(PORT, async()=>{
     console.log("server couldn't start")
   }
 })
-
-
 
 
