@@ -1,10 +1,19 @@
 import userModel from "../models/user.model.js"
+import bcrypt from "bcryptjs"
 
 const createUser = async (req, res) =>{
     try {
     const { body } = req
-    // const body = req.body
-    const user = new userModel(body)
+    const { name, password, email, role } = body
+    const saltRounds = await bcrypt.genSalt(10)
+    const hashPassword = await bcrypt.hash(password, saltRounds)
+
+    const user = new userModel({
+      name,
+      password: hashPassword,
+      email,
+      role
+    })
     await user.save()
     return res.status(200).json({
           message: "Successfully created user",
@@ -21,7 +30,7 @@ const createUser = async (req, res) =>{
 const fetchUser = async (req, res) =>{
     try {
       // const user = await userModel.find().populate('admin', '-_id -__v -createdAt -updatedAt')
-    const user = await userModel.find().select('name role')
+    const user = await userModel.find().select('name role password')
     if (user.length === 0){
       return res.status(400).json({
         message: "No user found in database"
@@ -117,4 +126,4 @@ const addUser = async (req, res) =>{
   }
 }
 
-export default { createUser, fetchUser, readUser, clearUser, removeUser, addUser }
+export { createUser, fetchUser, readUser, clearUser, removeUser, addUser }
