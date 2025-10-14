@@ -26,6 +26,34 @@ const createUser = async (req, res) =>{
   }
 }
 
+const loginUser = async (req, res) =>{
+    try {
+    const { body } = req
+    const { email, password } = body
+    const user = await userModel.findOne({ email })
+    if(!user){
+      return res.status(404).json({
+        message: "User does not exist"
+      })
+    }
+    const comparePassword = await bcrypt.compare(password, user.password)
+    if(!comparePassword){
+      return res.status(400).json({
+          message: "Invalid Credentials",
+      })
+    }
+
+    return res.status(200).json({
+          message: "Successful Login",
+          data: user
+    })
+  } catch (error) {
+      return res.status(500).json({
+        message: error.message
+      })
+  }
+}
+
 
 const fetchUser = async (req, res) =>{
     try {
@@ -126,4 +154,4 @@ const addUser = async (req, res) =>{
   }
 }
 
-export { createUser, fetchUser, readUser, clearUser, removeUser, addUser }
+export { createUser, loginUser, fetchUser, readUser, clearUser, removeUser, addUser }
