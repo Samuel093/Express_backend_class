@@ -1,5 +1,6 @@
 import userModel from "../models/user.model.js"
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
 
 const createUser = async (req, res) =>{
     try {
@@ -43,10 +44,9 @@ const loginUser = async (req, res) =>{
       })
     }
 
-    return res.status(200).json({
-          message: "Successful Login",
-          data: user
-    })
+    const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_KEY, { subject: "accessToken", expiresIn: process.env.EXPIRATION })
+
+    return res.status(200).send(accessToken)
   } catch (error) {
       return res.status(500).json({
         message: error.message
