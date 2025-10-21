@@ -19,7 +19,9 @@ const userSchema = mongoose.Schema({
     role: {
         type: String,
         enum: ['Admin', 'Tutor', 'Student']
-    }
+    },
+    otp: { type: String },
+    otpExpiry: { type: Date }
 },{
     timestamps: true
 })

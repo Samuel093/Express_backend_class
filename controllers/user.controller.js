@@ -1,6 +1,9 @@
 import userModel from "../models/user.model.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import otpGenerator from 'otp-generator'
+import { Resend } from "resend"
+import { sendEmail } from "../utils/sendEmail.js"
 
 const createUser = async (req, res) =>{
     try {
@@ -13,7 +16,7 @@ const createUser = async (req, res) =>{
       name,
       password: hashPassword,
       email,
-      role
+      role,
     })
     await user.save()
     return res.status(200).json({
@@ -154,4 +157,34 @@ const addUser = async (req, res) =>{
   }
 }
 
-export { createUser, loginUser, fetchUser, readUser, clearUser, removeUser, addUser }
+const forgetPassword = async (req, res)=>{
+  try {
+    const { email } = req.body
+    const user = await userModel.findOne({ email })
+    if(!user){
+      return res.status(404).json({
+        message: "User does not exist"
+      })
+    }
+
+    const otp = otpGenerator.generate(6, { digits: true, alphabets:false, upperCase: false, specialChars: false })
+    
+    const startTime = new Date(Date.now());
+
+    await sendEmail({email, otp})
+    user.otp = otp,
+    user.otpExpiry = startTime
+
+    await user.save()
+
+    return res.status(200).json({ message: "OTP already sent to email" })
+
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    })
+  }
+}
+
+export { createUser, loginUser, fetchUser, readUser, clearUser, removeUser, addUser, forgetPassword }
